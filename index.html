@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>搜索</title>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+        
+        form {
+            width: 500px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px 10px;
+            position: relative;
+        }
+        
+        input[type="serach"] {
+            outline: none;
+            border: 0;
+            width: 500px;
+        }
+        
+        input[type="button"] {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 60px;
+            height: 40px;
+            border: 0;
+            outline: none;
+            background: green;
+            color: #fff;
+            border-radius: 5px;
+            transform: translateX(100%);
+        }
+        
+        #content {
+            width: 500px;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <input type="serach" name="" placeholder="请输入搜索内容" id="typeing">
+        <input type="button" id="search" value="搜索">
+    </form>
+    <ul id="content">
+
+    </ul>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        //     $('#search').click(function(){
+        //          render();
+        //     });
+        //     $('#typeing').keyup(function(){
+        //         render();
+        //     });
+        //    function render(){
+        //        var value =$('#typeing').val();
+        //          $.ajax({
+        //             url:'https://sug.so.360.cn/suggest?encodein=utf-8&encodeout=utf-8&format=json&fields=word&word='+value,
+        //             dataType:'jsonp',
+        //             success:function(data){
+        //                 var newData = data.result;
+        //                 var strLis ='';
+        //                 for ( var i = 0;i<newData.length;i++ ){
+        //                     strLis +='<li>'+newData[i].word+'</li>';
+        //                 }
+        //                 $('#content').html(strLis);
+        //             }
+        //          })
+        //    }
+
+        //手写jsonp
+        // document.querySelector('#search').onclick =function(){
+        //     var value =document.querySelector('#typeing').value;
+        //     var scriptElement = document.createElement('script');
+        //     scriptElement.src='https://sug.so.360.cn/suggest?encodein=utf-8&encodeout=utf-8&format=json&fields=word&word='+value+'&callback=method';
+        //     document.body.appendChild(scriptElement);
+
+        // };
+        // // var data ={obj:'zs',obj2:'ls',obj3:'wq'};
+        // // method(data);
+
+
+        // function method(data){
+        //     var newData = data.result;
+        //     var str = '';
+        //     for ( var i = 0;i<newData.length;i++ ){
+        //         str += '<li>'+newData[i].word+'</li>';
+        //     }
+        //     document.querySelector('#content').innerHTML = str;
+        // }
+
+
+        // method({key:'value',aaa:"bb"})
+        // function method(data){
+        //     console.log(data)
+        // }
+
+
+        function jsonp(options) {
+            //1. 拼接查询字符串
+            var url = options.url || location.pathname;
+            var params = options.data || {};
+            var queryString = '';
+            for (key in params) {
+                queryString += '&' + key + '=' + params[key];
+            }
+            var callback = 'itcast_' + (Math.random() * Math.random()).toString().substr(2);
+            url = url + queryString + '&callback=' + callback;
+            // 动态创建callback name
+            //2.动态创建script标签，添加到页面上
+            var scriptElement = document.createElement('script');
+            scriptElement.src = url;
+            document.body.appendChild(scriptElement);
+            //3.回调 数据
+            window[callback] = function (data) {
+                options.success && options.success(data);
+                document.body.removeChild(scriptElement);
+            }
+        }
+        // function method(data){
+        //     console.log(data)
+        // }
+
+
+        $('#typeing').keyup(function () {
+            var value =document.querySelector('#typeing').value;
+           jsonp({
+            url: 'https://sug.so.360.cn/suggest?encodein=utf-8&encodeout=utf-8&format=json&fields=word',
+            data: {
+                word: value
+            },
+            success: function (data) {
+                console.log(data)
+                var newData = data.result;
+                var str = '';
+                for (var i = 0; i < newData.length; i++) {
+                    str += '<li>' + newData[i].word + '</li>';
+                }
+                document.querySelector('#content').innerHTML = str;
+            }
+        });
+        });
+
+        
+    </script>
+</body>
+
+</html>
